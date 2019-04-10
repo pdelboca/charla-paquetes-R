@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Paquetes en R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Patricio Del Boca" />
+    <meta name="date" content="2019-04-10" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="footer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Paquetes en R
+## A guardar, a guardar… Cada cosa en su lugar!
+### Patricio Del Boca
+### 2019-04-10
+
+---
+
+layout: true
+  
+&lt;div class="my-header"&gt;&lt;/div&gt;
+
+&lt;div class="my-footer"&gt;&lt;span&gt;@pdelboca    
+&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;
+&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;
+Open Data Córdoba&lt;/span&gt;&lt;/div&gt; 
+
+---
+
+# Presentacion
+
+- @pdelboca
+- Ingeniero en Sistemas de Información
+- Desarrollador Python en Datopian
+- Presidente de Open Data Córdoba
+
+---
+
+# Nobleza Obliga
+
+Esta charla es una traducción al español de [https://r-pkgs.org/](https://r-pkgs.org/).
+
+Todos los créditos a sus creadores.
+
+&lt;!-- Horrible pero va... --&gt;
+&lt;div align="center"&gt; &lt;img src="imgs/cover.png" width=250 height=375&gt; &lt;/div&gt;
+
+---
+
+# Agenda
+
+- ¿Qué es un paquete?
+- Estructura de un Paquete
+- Beneficios
+- Componentes más importantes
+- Ejemplos locales
+
+---
+
+# ¿Qué es un paquete?
+
+Los paquetes son las unidades fundamentales de código R reproducible. 
+
+---
+
+# ¿Qué es un paquete?
+
+Los paquetes son las unidades fundamentales de código R reproducible. 
+
+Incluyen **funciones** de R *reutilizables*, la **documentación** que describe cómo usarlas y **datos** de muestra.
+
+---
+
+# ¿Qué es un paquete?
+
+Los paquetes son las unidades fundamentales de código R reproducible. 
+
+Incluyen **funciones** de R *reutilizables*, la **documentación** que describe cómo usarlas y **datos** de muestra.
+
+Los paquetes incluyen un mecanismo de distribución que hace que los mismos se puedan compartir y reutilizar fácilmente.
+
+---
+
+# Estructura de un Paquete
+
+Al final del día, un paquete no es más que una carpeta con componentes, en general:
+ - R/
+ - tests/ 
+ - data/
+ - data-raw/
+ - DESCRIPTION
+ - NAMESPACE
+ - .Rbuildignore
+ - etc...
+
+---
+
+# Estructura de un Paquete
+&lt;!-- Horrible pero va... --&gt;
+&lt;div align="center"&gt; &lt;img src="imgs/dplyr github.png" width=600 height=500&gt; &lt;/div&gt;
+
+---
+
+# Beneficios de usar Paquetes
+### Standards y buenas prácticas
+
+Organizar el código en un paquete facilita tu vida porque los paquetes vienen con convenciones: por ejemplo, pones el código R en **R/**, pruebas en **tests/** y datos en **data/**.
+
+---
+
+# Beneficios de usar Paquetes
+### Ahorra tiempo
+
+&gt; “Seriously, it doesn’t have to be about sharing your code (although that is an added benefit!). It is about saving yourself time." (Hilary Parker) 
+
+---
+
+# Beneficios de usar Paquetes
+### Permite generar cultura empresarial
+
+&lt;!-- Horrible pero va... --&gt;
+&lt;div align="center"&gt; &lt;img src="imgs/airbnb packages.png" width=400 height=175&gt; &lt;/div&gt;
+
+---
+
+# Beneficios de usar Paquetes
+### FOOS Rules! Pero a veces es difícil...
+
+&lt;!-- Horrible pero va... --&gt;
+&lt;div align="center"&gt; &lt;img src="imgs/beginner.png" width=450 height=500&gt; &lt;/div&gt;
+
+---
+
+# Principales Componentes
+
+---
+
+# R/
+
+El primer principio para crear un paquete es que todo el código R va en la carpeta **R/**.
+
+El código R que se escribe durante el desarrollo de un paquetes tiene el objetivo de crear **objetos** (mayoritariamente funciones).
+
+---
+
+# R/ (doble-click)
+### Scripts
+Cuando cargan un script con source(), cada linea de código se ejecta y los resultados se disponibilizan al instante en el entorno del usuario (solapa Environment).
+
+---
+
+# R/ (doble-click)
+### Paquetes
+Las cosas son distintas en los paquetes porque son cargados en 2 etapas:
+ - Construcción: cando el paquete es "build" (ej: por CRAN) todo el código en la carpeta R/ es ejecutado y **el resultado de esa ejecución** es almacenada en una "imagen". (Mostrar libreria del usuario)
+
+---
+
+# R/ (doble-click)
+### Paquetes
+Las cosas son distintas en los paquetes porque son cargados en 2 etapas:
+ - Construcción: cando el paquete es "build" (ej: por CRAN) todo el código en la carpeta R/ es ejecutado y **el resultado de esa ejecución** es almacenada en una "imagen". (Mostrar libreria del usuario)
+ - Carga: cuando el paquete es cargado, con library() o require(), los resultados que se guardaron en esa imagen se disponibilizan en el .GlobalEnv.
+
+---
+
+# R/ (doble-click)
+
+Si cargaramos scripts de la misma forma que cargamos paquetes el código se vería así:
+
+
+```r
+# Load a script into a new environment and save it
+env &lt;- new.env(parent = emptyenv())
+
+source("my-script.R", local = env)
+
+save(envir = env, "my-script.Rdata")
+
+# Later, in another R session
+load("my-script.Rdata")
+```
+
+---
+
+# Importante!
+
+Cuando desarrollen un paquete **NUNCA** usen library() o require() o source(), existe un lugar especial en el archivo DESCRIPTION para cargar dependencias.
+
+&lt;!-- Usar library() o require() no solo es una mala práctica (en el desarrollo de paquetes) sino que además es inútil dado que cuando nosotros cargamos un paquete abrimos una imagen guardada de una ejecución ya hecha, es decir, no estamos ejecutando el código del paquete al momento de cargarlo y por ende no se ejecutan library() o require() --&gt;
+
+---
+
+# DESCRIPTION
+
+Archivo de texto usado para guardar Metadata del paquete
+
+
+```r
+Package: mypackage
+Title: What The Package Does (one line, title case required)
+Version: 0.1
+Authors@R: person("First", "Last", email = "first.last@example.com",
+                  role = c("aut", "cre"))
+Description: What the package does (one paragraph)
+Depends: R (&gt;= 3.1.0),
+  dplyr,
+  lubridate
+License: What license is it under?
+LazyData: true
+```
+
+---
+
+# DESCRIPTION
+### Imports
+
+Los paquetes listados acá deben estar presentes para que el paquete funciones. De hecho, cada vez que el paquete sea instalado, todos los paquetes listados en Imports y que no estén en el sistema **van a ser instalados**.
+
+---
+
+# DESCRIPTION
+### Imports
+
+Los paquetes listados acá deben estar presentes para que el paquete funciones. De hecho, cada vez que el paquete sea instalado, todos los paquetes listados en Imports y que no estén en el sistema **van a ser instalados**.
+
+Agregar un paquete como dependecia en Imports asegura que va a ser instalado, sin embargo, no significa que vayan a ser cargados junto al paquete (cuando llamemos library("mi_paquete")).
+
+---
+
+# DESCRIPTION
+### Imports
+
+Los paquetes listados acá deben estar presentes para que el paquete funciones. De hecho, cada vez que el paquete sea instalado, todos los paquetes listados en Imports y que no estén en el sistema **van a ser instalados**.
+
+Agregar un paquete como dependecia en Imports asegura que va a ser instalado, sin embargo, no significa que vayan a ser cargados junto al paquete (cuando llamemos library("mi_paquete")).
+
+La mejor práctica es llamar explicitamente a las funciones externas al paquete usando la sintaxis paquete::funcion().
+
+
+---
+
+# DESCRIPTION
+### Suggests 
+
+Aqui listamos aquellos paquetes que **puedan** ser una dependencia. 
+
+---
+
+# DESCRIPTION
+### Suggests 
+
+Aqui listamos aquellos paquetes que **puedan** ser una dependencia. 
+
+Hay veces que se usan paquetes para, por ejemplo, algun conjunto de datos que sirva para ejecutar alguna función en particular, para ejecutar pruebas, para crear viñetas con documentación más explicada.
+
+
+---
+
+# DESCRIPTION
+Los paquetes listados en Suggests no van a ser instalados junto al paquete por lo que es necesario chequear su existencia antes de usarlo explícitamente en alguna función de nuestro paquete.
+
+
+```r
+# You need the suggested package for this function    
+my_fun &lt;- function(a, b) {
+  if (!requireNamespace("pkg", quietly = TRUE)) {
+    stop("Package \"pkg\" needed for this function to work. Please install it.",
+      call. = FALSE)
+  }
+}
+
+# There's a fallback method if the package isn't available
+my_fun &lt;- function(a, b) {
+  if (requireNamespace("pkg", quietly = TRUE)) {
+    pkg::f()
+  } else {
+    g()
+  }
+}
+```
+
+---
+
+# DESCRIPTION
+## Versionado de Paquetes
+
+
+```r
+Imports:
+    ggvis (&gt;= 0.2),
+    dplyr (&gt;= 0.3.0.1)
+Suggests:
+    MASS (&gt;= 7.3.0)
+```
+
+Salvo excepcion concreta, nunca ==, siempre &gt;=.
+
+---
+
+# data/
+
+El lugar más común para guardar los datos de nuestro paquete!
+
+Cada archivo en este directorio tiene que ser un archivo .RData creado con el comando save() conteniendo un objeto único con el mismo nombre que el archivo. La mejor forma es crearlo usando devtools::use_data().
+
+
+```r
+x &lt;- sample(1000)
+devtools::use_data(x, mtcars)
+```
+
+---
+
+# data/
+
+Si el archivo DESCRIPTION contiene el parámetro LazyData: true, todos los datasets will be lazily loaded. (No van a ocupar espacio en memoria RAM hasta que sean explícitamente llamados)
+
+Es recomendable siempre utilizar LazyData: true en el archivo DESCRIPTION. (Por defecto devtools::create() lo agrega)
+
+---
+
+# data/
+## R/sysdata.Rda
+Alguntas veces, las funciones requiere tablas o datos pre-calculados. Si los ponemos en la carpeta data/ también van a estar disponibles para los usuarios, lo que no es recomenddado.
+
+Paquetes como, munsell and dichromat, usan R/sysdata.rda para almacenar tablas de datos sobre colores.
+
+
+```r
+x &lt;- sample(1000)
+devtools::use_data(x, mtcars, internal = TRUE)
+```
+
+---
+
+# data-raw/
+Usualmente los datos incluidos en data/ son una versión limpia de datos crudos obtenidos en otras fuentes. Se recomienda siempre incluir el código utilizado en la obtención y limpieza.
+
+No es necesario agregarlo a la versión construida del paquete por ello es necesario agregar esta carpeta al archivo .Rbuildignore.
+
+---
+
+# Ejemplos Locales: georefar
+
+[https://github.com/pdelboca/georefar](https://github.com/pdelboca/georefar)
+
+---
+
+# Ejemplos Locales: nombredepersonas
+
+[https://github.com/pdelboca/nombredepersonas](https://github.com/pdelboca/nombredepersonas)
+
+---
+
+# Ejemplos Locales: eph
+
+[https://github.com/rindec/eph](https://github.com/rindec/eph)
+
+---
+
+# Gracias!
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
